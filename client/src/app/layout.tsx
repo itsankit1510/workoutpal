@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from '@clerk/nextjs';
 import { Geist, Geist_Mono } from "next/font/google";
+import { AuthProvider } from "@/lib/auth-context";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,17 +25,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-         <ClerkProvider
-          publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-          // Point to your Express backend
-          proxyUrl={"http://localhost:3001/api/protected"}
-        >
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
-      </ClerkProvider>
     </html>
   );
 }

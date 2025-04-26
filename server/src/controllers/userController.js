@@ -1,4 +1,3 @@
-// filepath: c:\Users\Ankit.Bisht\Desktop\Ankitsingh Bisht\docubot\server\src\controllers\userController.js
 import { StatusCodes } from 'http-status-codes';
 import { User } from '../models/index.js';
 import { ApiResponse } from '../utils/apiResponse.js';
@@ -85,6 +84,39 @@ export const userController = {
       return ApiResponse.success(res, 'User retrieved successfully', { user });
     } catch (error) {
       logger.error('Get user error:', error);
+      next(error);
+    }
+  },
+  
+  /**
+   * Delete a user by ID (admin only)
+   * @param {Request} req - Express request object
+   * @param {Response} res - Express response object
+   * @param {NextFunction} next - Express next middleware function
+   */
+  async deleteUser(req, res, next) {
+    try {
+      const { id } = req.params;
+
+      // Don't allow admins to delete themselves
+      if (id === req.user.id) {
+        return ApiResponse.error(
+          res,
+          'Cannot delete your own account',
+          StatusCodes.FORBIDDEN
+        );
+      }
+
+      const user = await User.findByPk(id);
+
+      if (!user) {
+        return ApiResponse.error(res, 'User not found', StatusCodes.NOT_FOUND);
+      }
+
+      await user.destroy();
+      return ApiResponse.success(res, 'User deleted successfully');
+    } catch (error) {
+      logger.error('Delete user error:', error);
       next(error);
     }
   }

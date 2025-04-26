@@ -5,21 +5,26 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
+import { useAuth } from "@/lib/auth-context"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false)
+  const { login, isLoading, error, isAuthenticated } = useAuth()
+  const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard")
+    }
+  }, [isAuthenticated, router])
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    
-    // This is where you would normally handle login
-    // For now, just simulate a login delay
-    setTimeout(() => {
-      setIsLoading(false)
-      // Redirect to dashboard after successful login
-      window.location.href = "/dashboard"
-    }, 1500)
+    await login(email, password)
   }
 
   return (
@@ -41,15 +46,22 @@ export default function LoginPage() {
           
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
+                  {error}
+                </div>
+              )}
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium">
-                  Username or Email
+                  Email
                 </label>
                 <Input
                   id="email"
                   placeholder="name@example.com"
                   required
-                  type="text"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               
@@ -66,6 +78,8 @@ export default function LoginPage() {
                   id="password"
                   required
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               

@@ -25,4 +25,11 @@ router.post('/', authenticateJWT, requireAdmin, userController.createUser);
  */
 router.get('/:id', authenticateJWT, userController.getUserById);
 
+/**
+ * @route DELETE /api/users/:id
+ * @desc Delete a user (admin only)
+ * @access Admin
+ */
+router.delete('/:id', authenticateJWT, requireAdmin, userController.deleteUser);
+
 export default router;
