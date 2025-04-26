@@ -1,0 +1,7 @@
+node_modules
+logs
+.git
+dist
+build
+coverage
+*.min.js
